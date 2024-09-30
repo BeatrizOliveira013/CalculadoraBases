@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  
+    <!-- Fonte externa -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet"> 
+
+    <!-- CSS externo -->
+    <link rel="stylesheet" href="style.css">
+
+    <title>CheckMate Queen Convert</title> 
+</head>
+<body>
+    <!-- Container principal -->
+    <div id="container">
+        <h1>CheckMate Queen Convert</h1>
+        
+        <!-- Campo de entrada e botão -->
+        <div class="input-button-container">
+            <input id="inputValue" type="text" placeholder="Digite um valor">
+            <button onclick="converter()" disabled>Converter</button> <!-- Botão inicialmente desabilitado -->
+        </div>
+
+        <!-- Seleção da base de entrada -->
+        <select id="inputBase" onchange="mudarPlaceholder()">
+            <option value="">Selecione uma opção</option>
+            <option value="decimal">Decimal</option>
+            <option value="hexadecimal">Hexadecimal</option>
+            <option value="octal">Octal</option>
+            <option value="binario">Binário</option>
+        </select>
+        <br>
+
+        <h3>Converter para:</h3> 
+
+        <!-- Opções de conversão para outras bases -->
+        <input type="checkbox" id="convertDecimal"><label for="convertDecimal">Decimal</label>
+        <input type="checkbox" id="convertHexadecimal"><label for="convertHexadecimal">Hexadecimal</label>
+        <input type="checkbox" id="convertOctal"><label for="convertOctal">Octal</label>
+        <input type="checkbox" id="convertBinario"><label for="convertBinario">Binário</label>
+        <br>
+
+        <!-- Divs para exibir os resultados e mensagens de validação -->
+        <div id="output"></div>
+        <div id="div_validar"></div>
+
+        <!-- Botão de reset -->
+        <button id="resetButton" onclick="resetar()">Resetar</button> <!-- Botão de reset -->
+    </div>
+
+    <script>
+        // Função que muda o placeholder do campo de entrada com base na base selecionada
+        function mudarPlaceholder() {
+            var escolha = document.getElementById("inputBase").value; // Base selecionada
+            var campoEntrada = document.getElementById("inputValue"); // Input do valor a ser convertido
+            
+            // Muda o placeholder de acordo com a base escolhida
+            if (escolha === "decimal") {
+                campoEntrada.placeholder = "Digite um valor decimal";
+            } else if (escolha === "hexadecimal") {
+                campoEntrada.placeholder = "Digite um valor hexadecimal";
+            } else if (escolha === "octal") {
+                campoEntrada.placeholder = "Digite um valor octal";
+            } else if (escolha === "binario") {
+                campoEntrada.placeholder = "Digite um valor binário";
+            }
+
+            habilitarBotao(); // Chama a função para habilitar ou desabilitar o botão de conversão
+        }
+
+        // Função que habilita o botão de conversão se o valor e a base forem preenchidos
+        function habilitarBotao() {
+            var inputValue = document.getElementById('inputValue').value;
+            var inputBase = document.getElementById('inputBase').value;
+            var botaoConverter = document.querySelector('button');
+
+            // Habilita o botão se ambos os campos estiverem preenchidos
+            if (inputValue && inputBase) {
+                botaoConverter.disabled = false;
+            } else {
+                botaoConverter.disabled = true;
+            }
+        }
+
+        // Função que realiza a conversão
+        function converter() {
+            var inputValue = document.getElementById('inputValue').value; // Valor de entrada
+            var inputBase = document.getElementById('inputBase').value; // Base de entrada
+            var div_resultado = document.getElementById('output'); // Div para exibir o resultado
+            var div_validar = document.getElementById('div_validar'); // Div para mensagens de validação
+
+            // Validação do valor de entrada
+            if (!validarEntrada(inputValue, inputBase)) {
+                div_validar.innerHTML = 'Digite um número válido para a base selecionada!'; // Mensagem de erro
+                return; // Interrompe a função se a entrada for inválida
+            } else {
+                div_validar.innerHTML = ''; // Limpa a mensagem de validação se a entrada for válida
+            }
+
+            var decimalValue; // Variável para armazenar o valor convertido em decimal
+
+            // Converte o valor de entrada para decimal com base na base selecionada
+            if (inputBase === 'decimal') {
+                decimalValue = parseInt(inputValue, 10); 
+            } else if (inputBase === 'hexadecimal') {
+                decimalValue = parseInt(inputValue, 16); 
+            } else if (inputBase === 'octal') {
+                decimalValue = parseInt(inputValue, 8); 
+            } else if (inputBase === 'binario') {
+                decimalValue = parseInt(inputValue, 2); 
+            }
+
+            var resultadoConversao = ''; // Variável para armazenar os resultados das conversões
+
+            // Se o checkbox de Decimal estiver marcado, adiciona a conversão para decimal
+            if (document.getElementById('convertDecimal').checked) {
+                resultadoConversao += `<p>Decimal: ${decimalValue.toLocaleString()}</p>`; // Adiciona separador de milhar
+            }
+
+            // Se o checkbox de Hexadecimal estiver marcado, adiciona a conversão para hexadecimal
+            if (document.getElementById('convertHexadecimal').checked) {
+                resultadoConversao += `<p>Hexadecimal: ${decimalValue.toString(16).toUpperCase()}</p>`;
+            }
+
+            // Se o checkbox de Octal estiver marcado, adiciona a conversão para octal
+            if (document.getElementById('convertOctal').checked) {
+                resultadoConversao += `<p>Octal: ${decimalValue.toString(8)}</p>`;
+            }
+
+            // Se o checkbox de Binário estiver marcado, adiciona a conversão para binário
+            if (document.getElementById('convertBinario').checked) {
+                resultadoConversao += `<p>Binário: ${decimalValue.toString(2)}</p>`;
+            }
+
+            div_resultado.innerHTML = resultadoConversao; // Exibe o resultado das conversões
+        }
+
+        // Função que valida se o valor de entrada está correto para a base selecionada
+        function validarEntrada(inputValue, inputBase) {
+            var validChars = ''; // Armazena os caracteres válidos para a base
+
+            // Define os caracteres válidos para cada base
+            if (inputBase === 'decimal') {
+                validChars = '0123456789'; 
+            } else if (inputBase === 'hexadecimal') {
+                validChars = '0123456789ABCDEFabcdef'; 
+            } else if (inputBase === 'octal') {
+                validChars = '01234567'; 
+            } else if (inputBase === 'binario') {
+                validChars = '01'; 
+            }
+
+            // Valida se todos os caracteres da entrada são válidos para a base escolhida
+            for (var i = 0; i < inputValue.length; i++) {
+                if (validChars.indexOf(inputValue[i]) === -1) {
+                    return false; // Retorna falso se encontrar algum caractere inválido
+                }
+            }
+            return true; // Retorna verdadeiro se todos os caracteres forem válidos
+        }
+
+        // Função para resetar todos os campos e opções
+        function resetar() {
+            document.getElementById('inputValue').value = ''; // Limpa o campo de valor
+            document.getElementById('inputBase').value = ''; // Reseta a base selecionada
+            document.getElementById('convertDecimal').checked = false; // Desmarca o checkbox Decimal
+            document.getElementById('convertHexadecimal').checked = false; // Desmarca o checkbox Hexadecimal
+            document.getElementById('convertOctal').checked = false; // Desmarca o checkbox Octal
+            document.getElementById('convertBinario').checked = false; // Desmarca o checkbox Binário
+            document.getElementById('output').innerHTML = ''; // Limpa o resultado
+            document.getElementById('div_validar').innerHTML = ''; // Limpa a mensagem de validação
+            document.querySelector('button').disabled = true; // Desabilita o botão de conversão
+        }
+    </script>
+</body>
+</html>
